@@ -12,16 +12,18 @@ import java.io.IOException;
 import java.util.Set;
 
 public class StripesReducer extends Reducer<Text, MapWritable, Text, MapWritable> {
+
     private MapWritable incrementingMap = new MapWritable();
     @Override
     protected void reduce(Text key, Iterable<MapWritable> values, Context context) throws IOException, InterruptedException {
+        System.out.println("----------------------------------REDUCER---------------------------------------");
         incrementingMap.clear();
         for (MapWritable value : values) {
             addAll(value);
         }
         for (Writable x : incrementingMap.keySet())
         {
-            System.out.print("\n <("+key+","+x.toString()+"),"+ incrementingMap.get(x).toString()+">;");
+            System.out.println("<("+key+","+x.toString()+"),"+ incrementingMap.get(x).toString()+">;");
         }
         context.write(key, incrementingMap);
     }

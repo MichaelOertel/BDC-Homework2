@@ -27,7 +27,7 @@ public class CoOccurrenceDriver {
         } else if (args[0].equalsIgnoreCase("stripes")) {
             job.setOutputKeyClass(Text.class);
             job.setOutputValueClass(MapWritable.class);
-            doMapReduce(job, args[1], StripesOccurrenceMapper.class, "stripes", "stripes co-occur", StripesReducer.class);
+            doMapReduce(job, args[1], StripesOccurrenceMapper.class, "stripes", "stripes co-occur", StripesCombiner.class);
         }
 
     }
