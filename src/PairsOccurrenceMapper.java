@@ -7,6 +7,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class PairsOccurrenceMapper extends Mapper<LongWritable, Text, WordPair, IntWritable> {
     private WordPair wordPair = new WordPair();
@@ -14,7 +15,7 @@ public class PairsOccurrenceMapper extends Mapper<LongWritable, Text, WordPair, 
 
     @Override
     protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-        int neighbors = context.getConfiguration().getInt("neighbors", 2);
+        int neighbors = context.getConfiguration().getInt("neighbors", 10);
         String[] tokens = value.toString().split("\\s+");
         if (tokens.length > 1) {
             for (int i = 0; i < tokens.length; i++) {

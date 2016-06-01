@@ -8,6 +8,11 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;
 
+/**
+ * User: Bill Bejeck
+ * Date: 11/24/12
+ * Time: 1:31 AM
+ */
 public class PairsRelativeOccurrenceMapper extends Mapper<LongWritable, Text, WordPair, IntWritable> {
     private WordPair wordPair = new WordPair();
     private IntWritable ONE = new IntWritable(1);
@@ -15,7 +20,8 @@ public class PairsRelativeOccurrenceMapper extends Mapper<LongWritable, Text, Wo
 
     @Override
     protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-        int neighbors = context.getConfiguration().getInt("neighbors", 2);
+        System.out.println("----------------------------------MAPPER---------------------------------------");
+        int neighbors = context.getConfiguration().getInt("neighbors", 30);
         String[] tokens = value.toString().split("\\s+");
         if (tokens.length > 1) {
             for (int i = 0; i < tokens.length; i++) {
@@ -32,10 +38,12 @@ public class PairsRelativeOccurrenceMapper extends Mapper<LongWritable, Text, Wo
                 for (int j = start; j <= end; j++) {
                     if (j == i) continue;
                     wordPair.setNeighbor(tokens[j].replaceAll("\\W",""));
+                    System.out.println("WordPair: "+wordPair.toString()+" "+ONE);
                     context.write(wordPair, ONE);
                 }
                 wordPair.setNeighbor("*");
                 totalCount.set(end - start);
+                System.out.println("WordPair: "+wordPair.toString()+"Total Count: "+totalCount);
                 context.write(wordPair, totalCount);
             }
         }

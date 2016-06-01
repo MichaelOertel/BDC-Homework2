@@ -7,17 +7,21 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapreduce.Reducer;
 
+import java.io.DataInput;
 import java.io.IOException;
 import java.util.Set;
 
 public class StripesReducer extends Reducer<Text, MapWritable, Text, MapWritable> {
     private MapWritable incrementingMap = new MapWritable();
-
     @Override
     protected void reduce(Text key, Iterable<MapWritable> values, Context context) throws IOException, InterruptedException {
         incrementingMap.clear();
         for (MapWritable value : values) {
             addAll(value);
+        }
+        for (Writable x : incrementingMap.keySet())
+        {
+            System.out.print("\n <("+key+","+x.toString()+"),"+ incrementingMap.get(x).toString()+">;");
         }
         context.write(key, incrementingMap);
     }

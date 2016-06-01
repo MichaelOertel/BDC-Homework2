@@ -16,6 +16,7 @@ public class PairsRelativeOccurrenceReducer extends Reducer<WordPair, IntWritabl
 
     @Override
     protected void reduce(WordPair key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
+        System.out.println("----------------------------------REDUCER---------------------------------------");
         if (key.getNeighbor().equals(flag)) {
             if (key.getWord().equals(currentWord)) {
                 totalCount.set(totalCount.get() + getTotalCount(values));
