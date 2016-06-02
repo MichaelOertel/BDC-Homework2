@@ -32,9 +32,14 @@ public class StripesOccurrenceMapper extends Mapper<LongWritable,Text,Text,MapWr
                         occurrenceMap.put(neighbor,new IntWritable(1));
                     }
                 }
+
+                count_B.put(new Text("*"),new IntWritable(1));
+
                 for (Writable x: occurrenceMap.keySet())
                     System.out.println("Word: "+word.toString()+" "+x.toString()+" "+occurrenceMap.get(x).toString());
-                count_B.put(new Text("*"),new IntWritable(1));
+                for (Writable y: count_B.keySet())
+                    System.out.println("Word: "+word.toString()+" "+y.toString()+" "+count_B.get(y).toString());
+
                 context.write(word,count_B);
                 context.write(word,occurrenceMap);
             }
