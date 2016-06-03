@@ -35,7 +35,7 @@ public class Mapper_2_A2 extends Mapper<LongWritable, Text, WordPair, WordPair>{
 
                 context.write(new WordPair(tokens[0], tokens[1]), new WordPair("$", tokens[2]));
 
-                System.out.println(new WordPair(tokens[0], tokens[1]).toString() + " " + new WordPair("$", tokens[2]).toString());
+                //System.out.println(new WordPair(tokens[0], tokens[1]).toString() + " " + new WordPair("$", tokens[2]).toString());
             }
         } /*input da intermediate_output2. Contiene (A B C),count(ABC) */
         else if (tokens.length == 4) {
