@@ -1,23 +1,23 @@
-/**
- * Created by MichaelOertel on 01/06/16.
- */
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.MapWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapreduce.Reducer;
 
-import java.io.DataInput;
 import java.io.IOException;
 import java.util.Set;
 
-public class StripesReducer extends Reducer<Text,MapWritable,WordPair,IntWritable/*Text,MapWritable*/> {
+/**
+ * Created by Michael Oertel and Aldo D'Eramo on 03/06/16.
+ */
+
+public class Reducer_1 extends Reducer<Text,MapWritable,WordPair,IntWritable/*Text,MapWritable*/> {
     private Text flag = new Text("*");
     private MapWritable incrementingAsterixMap = new MapWritable();
 
     @Override
     protected void reduce(Text word, Iterable<MapWritable> values, Context context) throws IOException, InterruptedException {
-        System.out.println("----------------------------------REDUCER---------------------------------------");
+        //System.out.println("----------------------------------REDUCER1---------------------------------------");
 
         incrementingAsterixMap.clear();
 
@@ -25,8 +25,9 @@ public class StripesReducer extends Reducer<Text,MapWritable,WordPair,IntWritabl
             addAsterix(/*word,*/value);
         for(Writable key: incrementingAsterixMap.keySet())
         {
-            WordPair p = new WordPair(word,new Text(key.toString()));
-            System.out.println("<("+p.toString()+"),"+ (IntWritable)incrementingAsterixMap.get(key)+">;");
+
+            WordPair p = new WordPair(new Text(key.toString()),word);
+            //System.out.println("<("+p.toString()+"),"+ (IntWritable)incrementingAsterixMap.get(key)+">;");
             context.write(/*new WordPair(word,new Text(key.toString()))*/p,(IntWritable)incrementingAsterixMap.get(key));
         }
         /*for (Writable x : incrementingAsterixMap.keySet())

@@ -7,7 +7,11 @@ import org.apache.hadoop.mapreduce.Mapper;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class StripesOccurrenceMapper extends Mapper<LongWritable,Text,Text,MapWritable> {
+/**
+ * Created by Michael Oertel and Aldo D'Eramo on 03/06/16.
+ */
+
+public class Mapper_1 extends Mapper<LongWritable,Text,Text,MapWritable> {
     private MapWritable occurrenceMap = new MapWritable();
     private MapWritable count_B = new MapWritable();
     private Text word = new Text();
@@ -17,7 +21,7 @@ public class StripesOccurrenceMapper extends Mapper<LongWritable,Text,Text,MapWr
 
     @Override
     protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-        System.out.println("----------------------------------MAPPER---------------------------------------");
+        //System.out.println("----------------------------------MAPPER1---------------------------------------");
 
         String[] tokens = value.toString().split("\\s+");
         if (tokens.length > 1) {
@@ -49,10 +53,10 @@ public class StripesOccurrenceMapper extends Mapper<LongWritable,Text,Text,MapWr
 
                 count_B.put(new Text("*"),new IntWritable(1));
 
-                for (Writable x: occurrenceMap.keySet())
+                /*for (Writable x: occurrenceMap.keySet())
                     System.out.println("Word: "+word.toString()+" "+x.toString()+" "+occurrenceMap.get(x).toString());
                 for (Writable y: count_B.keySet())
-                    System.out.println("Word: "+word.toString()+" "+y.toString()+" "+count_B.get(y).toString());
+                    System.out.println("Word: "+word.toString()+" "+y.toString()+" "+count_B.get(y).toString());*/
 
                 context.write(word,count_B);
                 context.write(word,occurrenceMap);

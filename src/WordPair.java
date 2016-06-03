@@ -62,8 +62,8 @@ public class WordPair implements Writable,WritableComparable<WordPair> {
 
     @Override
     public String toString() {
-        return "{word=["+word+"]"+
-                " neighbor=["+neighbor+"]}";
+        return word+" "+neighbor;
+
     }
 
     @Override

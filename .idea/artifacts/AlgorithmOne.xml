@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="AlgorithmOne">
+    <output-path>$USER_HOME$/Desktop/BDC-Homework2/AlgorithmOne</output-path>
+    <root id="archive" name="AlgorithmOne.jar">
+      <element id="module-output" name="cooccurence" />
+    </root>
+  </artifact>
+</component>

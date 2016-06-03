@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="Co-Occurrence">
-    <output-path>$USER_HOME$/Desktop/Co-Occurence</output-path>
-    <root id="archive" name="Co-Occurrence.jar">
-      <element id="module-output" name="cooccurence" />
-    </root>
-  </artifact>
-</component>
