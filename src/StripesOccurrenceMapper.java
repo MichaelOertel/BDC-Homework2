@@ -5,12 +5,15 @@ import org.apache.hadoop.io.*;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class StripesOccurrenceMapper extends Mapper<LongWritable,Text,Text,MapWritable> {
     private MapWritable occurrenceMap = new MapWritable();
     private MapWritable count_B = new MapWritable();
     private Text word = new Text();
     private IntWritable ONE = new IntWritable(1);
+    private ArrayList<String> sameValues = new ArrayList<String>();
+
 
     @Override
     protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
@@ -22,8 +25,19 @@ public class StripesOccurrenceMapper extends Mapper<LongWritable,Text,Text,MapWr
                 word.set(tokens[i]);
                 occurrenceMap.clear();
                 count_B.clear();
+                if (sameValues.contains(tokens[i]))
+                {
+                    continue;
+                }
+                else
+                {
+                    sameValues.add(tokens[i]);
+                }
                 for (int j = 0; j <= tokens.length - 1; j++) {
-                if (j == i) continue;
+                if (tokens[j].toString().compareTo(tokens[i].toString()) == 0)
+                {
+                    continue;
+                }
                     Text neighbor = new Text(tokens[j]);
                     if(occurrenceMap.containsKey(neighbor)){
                         IntWritable count = (IntWritable)occurrenceMap.get(neighbor);
@@ -43,6 +57,7 @@ public class StripesOccurrenceMapper extends Mapper<LongWritable,Text,Text,MapWr
                 context.write(word,count_B);
                 context.write(word,occurrenceMap);
             }
+            sameValues.clear();
         }
     }
 }

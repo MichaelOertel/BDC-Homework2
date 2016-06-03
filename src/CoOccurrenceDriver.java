@@ -24,23 +24,27 @@ public class CoOccurrenceDriver {
             job.setOutputKeyClass(WordPair.class);
             job.setOutputValueClass(IntWritable.class);
             doMapReduce(job, args[1], PairsOccurrenceMapper.class, "pairs", "pairs-co-occur", PairsReducer.class);
-        } else if (args[0].equalsIgnoreCase("stripes")) {
-            job.setOutputKeyClass(Text.class);
-            job.setOutputValueClass(MapWritable.class);
-            doMapReduce(job, args[1], StripesOccurrenceMapper.class, "stripes", "stripes co-occur", StripesCombiner.class);
+        } else if (args[0].equalsIgnoreCase("stripes"))
+        {
+            job.setMapOutputKeyClass(Text.class);
+            job.setMapOutputValueClass(MapWritable.class);
+            job.setOutputKeyClass(WordPair.class);
+            job.setOutputValueClass(IntWritable.class);
+            /*job.setOutputKeyClass(Text.class);
+            job.setOutputValueClass(MapWritable.class);*/
+            doMapReduce(job, args[1], StripesOccurrenceMapper.class, "stripes", "stripes co-occur",StripesReducer.class);
         }
 
     }
 
 
-    private static void doMapReduce(Job job, String path, Class<? extends Mapper> mapperClass, String outPath, String jobName, Class<? extends Reducer> reducerClass) throws Exception {
+    private static void doMapReduce(Job job, String path, Class<? extends Mapper> mapperClass, String outPath, String jobName,Class<? extends Reducer> reducerClass) throws Exception {
         try {
             job.setJobName(jobName);
             FileInputFormat.addInputPath(job, new Path(path));
             FileOutputFormat.setOutputPath(job, new Path(outPath));
             job.setMapperClass(mapperClass);
             job.setReducerClass(reducerClass);
-            job.setCombinerClass(reducerClass);
             System.exit(job.waitForCompletion(true) ? 0 : 1);
         } catch (Exception e) {
             log.error("Error running MapReduce Job", e);

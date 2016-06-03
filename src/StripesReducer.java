@@ -11,34 +11,49 @@ import java.io.DataInput;
 import java.io.IOException;
 import java.util.Set;
 
-public class StripesReducer extends Reducer<Text, MapWritable, Text, MapWritable> {
+public class StripesReducer extends Reducer<Text,MapWritable,WordPair,IntWritable/*Text,MapWritable*/> {
+    private Text flag = new Text("*");
+    private MapWritable incrementingAsterixMap = new MapWritable();
 
-    private MapWritable incrementingMap = new MapWritable();
     @Override
-    protected void reduce(Text key, Iterable<MapWritable> values, Context context) throws IOException, InterruptedException {
+    protected void reduce(Text word, Iterable<MapWritable> values, Context context) throws IOException, InterruptedException {
         System.out.println("----------------------------------REDUCER---------------------------------------");
-        incrementingMap.clear();
-        for (MapWritable value : values) {
-            addAll(value);
-        }
-        for (Writable x : incrementingMap.keySet())
+
+        incrementingAsterixMap.clear();
+
+        for (MapWritable value : values)
+            addAsterix(/*word,*/value);
+        for(Writable key: incrementingAsterixMap.keySet())
         {
-            System.out.println("<("+key+","+x.toString()+"),"+ incrementingMap.get(x).toString()+">;");
+            WordPair p = new WordPair(word,new Text(key.toString()));
+            System.out.println("<("+p.toString()+"),"+ (IntWritable)incrementingAsterixMap.get(key)+">;");
+            context.write(/*new WordPair(word,new Text(key.toString()))*/p,(IntWritable)incrementingAsterixMap.get(key));
         }
-        context.write(key, incrementingMap);
+        /*for (Writable x : incrementingAsterixMap.keySet())
+        {
+            System.out.println("<("+word+","+x.toString()+"),"+ incrementingAsterixMap.get(x).toString()+">;");
+        }
+        context.write(word, incrementingAsterixMap);*/
     }
 
-
-    private void addAll(MapWritable mapWritable) {
+    private void addAsterix(/*Text word,*/MapWritable mapWritable) {
         Set<Writable> keys = mapWritable.keySet();
+        //System.out.println("Word: "+ word+" All Keys of Map"+keys.toString());
         for (Writable key : keys) {
             IntWritable fromCount = (IntWritable) mapWritable.get(key);
-            if (incrementingMap.containsKey(key)) {
-                IntWritable count = (IntWritable) incrementingMap.get(key);
+            if (incrementingAsterixMap.containsKey(key))
+            {
+                IntWritable count = (IntWritable) incrementingAsterixMap.get(key);
                 count.set(count.get() + fromCount.get());
-            } else {
-                incrementingMap.put(key, fromCount);
+                //System.out.println("Key: "+key.toString()+" Count value: "+count.toString());
+                incrementingAsterixMap.replace(key,count);
+            }
+            else
+            {
+                //System.out.println("Word: "+word+" Key: "+key.toString()+" Count value: "+fromCount.toString());
+                incrementingAsterixMap.put(key, fromCount);
             }
         }
     }
 }
+
