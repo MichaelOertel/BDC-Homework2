@@ -22,8 +22,8 @@ public class Mapper_1 extends Mapper<LongWritable, Text, Text, MapWritable> {
         //System.out.println("----------------------------------MAPPER1---------------------------------------");
 
         String[] tokens = value.toString().split("\\s+");
-        if (tokens.length > 1) {
 
+        if (tokens.length > 0) {
 
             for (int i = 0; i < tokens.length; i++) {
 
