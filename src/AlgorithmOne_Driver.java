@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class AlgorithmOne_Driver extends Configured implements Tool
 {
-    private static final String OUTPUT_PATH = "intermediate_output";
+    private static final String OUTPUT_PATH = "intermediate_output_1";
 
     static int printUsage() {
         System.out.println("StripesDriver [-m <maps>] [-r <reduces>] <input> <output>");

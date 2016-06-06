@@ -17,6 +17,7 @@ public class Mapper_1_A2 extends Mapper<LongWritable, Text, Text, MapWritable> {
     private MapWritable occurrenceMap = new MapWritable();
 
     private Text word = new Text();
+    private IntWritable ONE = new IntWritable(1);
 
     /* Lista contenente i valori visitati, se si incontra un valore visitato precedentemente
     * si salta affinchè il conteggio non venga ripetuto più di una volta */
@@ -38,7 +39,7 @@ public class Mapper_1_A2 extends Mapper<LongWritable, Text, Text, MapWritable> {
             for (int i = 0; i < tokens.length; i++) {
 
                 word.set(tokens[i]);
-                //System.out.print(word+": ");
+                occurrenceMap.clear();
 
                 if (sameValues.contains(tokens[i])) continue;
                 else sameValues.add(tokens[i]);
@@ -54,20 +55,17 @@ public class Mapper_1_A2 extends Mapper<LongWritable, Text, Text, MapWritable> {
                         if (tokens[k].toString().compareTo(tokens[j].toString()) == 0) continue;
                         if (tokens[k].toString().compareTo(tokens[i].toString()) == 0) continue;
 
+                        occurrenceMap.put(new WordPair(new Text(tokens[j]), new Text(tokens[k])), ONE);
+
                         WordPair pair = new WordPair(new Text(tokens[j]), new Text(tokens[k]));
 
-                        /* Se la stripe contiene già l'elemento neighbor, incrementiamo il valore associato,
-                        * altrimenti gli diamo come valore 1 */
-                        if (occurrenceMap.containsKey(pair)) {
-                            IntWritable count = (IntWritable) occurrenceMap.get(pair);
-                            count.set(count.get() + 1);
-                        } else {
+                        /* Se la stripe contiene già l'elemento pair lo inseriamo dandogli come valore 1 */
+                        if (!occurrenceMap.containsKey(pair)) {
                             occurrenceMap.put(pair, new IntWritable(1));
                         }
                     }
                 }
                 context.write(word, occurrenceMap);
-                occurrenceMap.clear();
             }
             sameValues.clear();
         }

@@ -11,6 +11,7 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,11 +20,10 @@ import java.util.List;
  */
 public class AlgorithmTwo_Driver extends Configured implements Tool {
 
-    private static final String OUTPUT_PATH = "intermediate_output";
     private static final String OUTPUT_PATH_2 = "intermediate_output_2";
 
     static int printUsage() {
-        System.out.println("StripesDriver [-m <maps>] [-r <reduces>] <input> <output>");
+        System.out.println("StripesDriver [-m <maps>] [-r <reduces>] <input> <output> <intermediate_output_1>");
         ToolRunner.printGenericCommandUsage(System.out);
         return -1;
     }
@@ -62,10 +62,10 @@ public class AlgorithmTwo_Driver extends Configured implements Tool {
                 System.exit(printUsage());
             }
         }
-        // Make sure there are exactly 2 parameters left.
-        if (otherArgs.size() != 2) {
+        // Make sure there are exactly 3 parameters left.
+        if (otherArgs.size() != 3) {
             System.out.println("ERROR: Wrong number of parameters: " +
-                    otherArgs.size() + " instead of 2.");
+                    otherArgs.size() + " instead of 3.");
             System.exit(printUsage());
         }
   /*
@@ -113,11 +113,10 @@ public class AlgorithmTwo_Driver extends Configured implements Tool {
         job2.setInputFormatClass(TextInputFormat.class);
         job2.setOutputFormatClass(TextOutputFormat.class);
 
-        TextInputFormat.addInputPath(job2, new Path(OUTPUT_PATH));
+        TextInputFormat.addInputPath(job2, new Path(otherArgs.get(2)));
         TextInputFormat.addInputPath(job2, new Path(OUTPUT_PATH_2));
         TextOutputFormat.setOutputPath(job2, new Path(otherArgs.get(1)));
 
         return job2.waitForCompletion(true) ? 0 : 1;
     }
-
 }

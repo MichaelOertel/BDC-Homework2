@@ -27,10 +27,7 @@ public class Mapper_2 extends Mapper<LongWritable, Text, Text, WordPair>{
         String[] tokens = value.toString().split("\\s+");
 
         if (tokens.length == 3) {
-
             context.write(new Text(tokens[1]), new WordPair(tokens[0], tokens[2]));
-
-           // System.out.println(tokens[1]+" "+tokens[0]+" "+tokens[2]);
         }
     }
 
