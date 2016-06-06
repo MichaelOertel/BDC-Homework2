@@ -72,7 +72,7 @@ public class Reducer_1_A2 extends Reducer<Text, MapWritable, WordTriple, IntWrit
                 IntWritable count = (IntWritable) incrementingAsterixMap.get(key);
                 count.set(count.get() + fromCount.get());
                 //System.out.println("Key present: "+key.toString()+" Count value: "+count.toString());
-                incrementingAsterixMap.replace(key, count);
+                ((IntWritable) incrementingAsterixMap.get(key)).set(count.get());
 
             } else {
                 //System.out.println("Key not present: "+key.toString()+" Count value: "+fromCount.toString());

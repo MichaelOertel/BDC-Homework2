@@ -47,7 +47,7 @@ public class Reducer_1 extends Reducer<Text,MapWritable,WordPair,IntWritable/*Te
                 IntWritable count = (IntWritable) incrementingAsterixMap.get(key);
                 count.set(count.get() + fromCount.get());
                 //System.out.println("Key: "+key.toString()+" Count value: "+count.toString());
-                incrementingAsterixMap.replace(key,count);
+                ((IntWritable) incrementingAsterixMap.get(key)).set(count.get());
             }
             else
             {
