@@ -8,47 +8,61 @@ import java.io.IOException;
  * Created by Michael Oertel and Aldo D'Eramo on 03/06/16.
  */
 
-public class Mapper_2_A2 extends Mapper<LongWritable, Text, WordPair, WordPair>{
+public class Mapper_2_A2 extends Mapper<LongWritable, Text, Text, Text> {
 
-    private final static String flag = new String("*");
+	private final static String flag = new String("*");
+	private Text first = new Text();
+	private Text second = new Text();
 
-    @Override
-    protected void cleanup(Context context) throws IOException,
-            InterruptedException {
-        // TODO Auto-generated method stub
-        super.cleanup(context);
-    }
+	@Override
+	protected void cleanup(Context context) throws IOException, InterruptedException {
+		// TODO Auto-generated method stub
+		super.cleanup(context);
+	}
 
-    @Override
-    protected void map(LongWritable key, Text value, Context context)
-            throws IOException, InterruptedException {
-        //System.out.println("----------------------------------MAPPER2----------------------------------------");
+	@Override
+	protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+		// System.out.println("----------------------------------MAPPER2----------------------------------------");
 
-        String[] tokens = value.toString().split("\\s+");
+		String[] tokens = value.toString().split("\\s+");
 
-        /* input da intermediate_output del primo algo. Contiene (B C),count(BC) */
-        if (tokens.length == 3) {
-            /* Saltiamo se incontriamo un '*', non serve nel conteggio di count(BC) */
-            if(!tokens[0].equals(flag)) {
-                context.write(new WordPair(tokens[0], tokens[1]), new WordPair("$", tokens[2]));
-            }
-        } /*input da intermediate_output2. Contiene (A B C),count(ABC) */
-        else if (tokens.length == 4) {
-            context.write(new WordPair(tokens[1], tokens[2]), new WordPair(tokens[0], tokens[3]));
-        }
-    }
+		if (tokens.length == 3) {
+			/*
+			 * Input da intermediate_output del primo algoritmo. Contiene
+			 * <(BC),count(BC)>
+			 */
+			if (!tokens[0].equals(flag)) {
+				/*
+				 * Saltiamo se incontriamo un '*', non serve nel conteggio di
+				 * count(BC). Prende in input una coppia del tipo
+				 * <(BC),count(BC)> ed emette una coppia del tipo
+				 * <(BC);($,count(BC))>
+				 */
+				first.set(tokens[0] + " " + tokens[1]);
+				second.set("$" + " " + tokens[2]);
+				context.write(first, second);
+			}
+		} else if (tokens.length == 4) {
+			/*
+			 * Input da intermediate_output del secondo algoritmo. Prende in
+			 * input una coppia del tipo <(ABC),count(ABC)> ed emette una coppia
+			 * del tipo <(BC);(A,count(ABC)>
+			 */
+			first.set(tokens[1] + " " + tokens[2]);
+			second.set(tokens[0] + " " + tokens[3]);
+			context.write(first, second);
+		}
+	}
 
-    @Override
-    public void run(Context context) throws IOException,
-            InterruptedException {
-        // TODO Auto-generated method stub
-        super.run(context);
-    }
+	@Override
+	public void run(Context context) throws IOException, InterruptedException {
+		// TODO Auto-generated method stub
+		super.run(context);
+	}
 
-    @Override
-    protected void setup(Context context) throws IOException,
-            InterruptedException {
-        // TODO Auto-generated method stub
-        super.setup(context);
-    }
+	@Override
+	protected void setup(Context context) throws IOException, InterruptedException {
+		// TODO Auto-generated method stub
+		super.setup(context);
+	}
 }

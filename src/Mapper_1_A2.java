@@ -1,6 +1,5 @@
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.MapWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
@@ -11,13 +10,10 @@ import java.util.ArrayList;
  * Created by Michael Oertel and Aldo D'Eramo on 03/06/16.
  */
 
-public class Mapper_1_A2 extends Mapper<LongWritable, Text, Text, MapWritable> {
+public class Mapper_1_A2 extends Mapper<LongWritable, Text, Text, IntWritable> {
 
-    /* Associative Array per contenere i valori delle coppie (B,C),count(ABC) */
-    private MapWritable occurrenceMap = new MapWritable();
-
-    private Text word = new Text();
     private IntWritable ONE = new IntWritable(1);
+    private Text triple = new Text();
 
     /* Lista contenente i valori visitati, se si incontra un valore visitato precedentemente
     * si salta affinchè il conteggio non venga ripetuto più di una volta */
@@ -35,37 +31,37 @@ public class Mapper_1_A2 extends Mapper<LongWritable, Text, Text, MapWritable> {
         //System.out.println("----------------------------------MAPPER1---------------------------------------");
 
         String[] tokens = value.toString().split("\\s+");
+        int size = tokens.length;
+        
         if (tokens.length > 2) {
-            for (int i = 0; i < tokens.length; i++) {
+            for (int i = 0; i < size; i++) {
+            	
+            	if (sameValues.contains(tokens[i])) continue;
+            	else sameValues.add(tokens[i]);
+            	
+                for (int j = i+1; j < size; j++) {
+                	
+                	if(tokens[j].compareTo(tokens[i]) == 0) continue;
 
-                word.set(tokens[i]);
-                occurrenceMap.clear();
+                    for (int k = j+1; k < size; k++) {
+                    	
+                    	if(tokens[k].compareTo(tokens[i]) == 0) continue;
+                    	if(tokens[k].compareTo(tokens[j]) == 0) continue;
 
-                if (sameValues.contains(tokens[i])) continue;
-                else sameValues.add(tokens[i]);
-
-                for (int j = 0; j < tokens.length; j++) {
-
-                    /* Se siamo sullo stesso elemento andiamo avanti... */
-                    if (tokens[j].toString().compareTo(tokens[i].toString()) == 0) continue;
-
-                    for (int k = 0; k < tokens.length; k++) {
-
-                        /* Se siamo sullo stesso elemento andiamo avanti... */
-                        if (tokens[k].toString().compareTo(tokens[j].toString()) == 0) continue;
-                        if (tokens[k].toString().compareTo(tokens[i].toString()) == 0) continue;
-
-                        occurrenceMap.put(new WordPair(new Text(tokens[j]), new Text(tokens[k])), ONE);
-
-                        WordPair pair = new WordPair(new Text(tokens[j]), new Text(tokens[k]));
-
-                        /* Se la stripe contiene già l'elemento pair lo inseriamo dandogli come valore 1 */
-                        if (!occurrenceMap.containsKey(pair)) {
-                            occurrenceMap.put(pair, new IntWritable(1));
-                        }
+                    	triple.set(tokens[i]+" "+tokens[j]+" "+tokens[k]); // ABC
+                    	context.write(triple, ONE);
+                    	triple.set(tokens[i]+" "+tokens[k]+" "+tokens[j]); // ACB
+                    	context.write(triple, ONE);
+                    	triple.set(tokens[j]+" "+tokens[i]+" "+tokens[k]); // BAC
+                    	context.write(triple, ONE);
+                    	triple.set(tokens[j]+" "+tokens[k]+" "+tokens[i]); // BCA
+                    	context.write(triple, ONE);
+                    	triple.set(tokens[k]+" "+tokens[i]+" "+tokens[j]); // CAB
+                    	context.write(triple, ONE);
+                    	triple.set(tokens[k]+" "+tokens[j]+" "+tokens[i]); // CBA
+                    	context.write(triple, ONE);
                     }
                 }
-                context.write(word, occurrenceMap);
             }
             sameValues.clear();
         }

@@ -92,6 +92,11 @@ public class WordPair implements Writable,WritableComparable<WordPair> {
     public void setNeighbor(String neighbor){
         this.neighbor.set(neighbor);
     }
+    public void setWord(Text word){
+    	this.word = word;
+    }
+    public void setNeighbor(Text neighbor){
+        this.neighbor = neighbor;    }
 
     public Text getWord() {
         return word;

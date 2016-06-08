@@ -11,11 +11,10 @@ import java.util.Set;
  * Created by Michael Oertel and Aldo D'Eramo on 03/06/16.
  */
 
-public class Reducer_1_A2 extends Reducer<Text, MapWritable, WordTriple, IntWritable> {
+public class Reducer_1_A2 extends Reducer<Text, IntWritable, Text, IntWritable> {
 
-    /* Array associativo finale */
-    private MapWritable incrementingAsterixMap = new MapWritable();
-
+	private IntWritable count = new IntWritable(0);
+    
     @Override
     protected void cleanup(Context context) throws IOException,
             InterruptedException {
@@ -24,23 +23,16 @@ public class Reducer_1_A2 extends Reducer<Text, MapWritable, WordTriple, IntWrit
     }
 
     @Override
-    protected void reduce(Text word, Iterable<MapWritable> values, Context context) throws IOException, InterruptedException {
+    protected void reduce(Text word, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
         //System.out.println("----------------------------------REDUCER1---------------------------------------");
 
-        incrementingAsterixMap.clear();
-
-        /* Crea l'array associativo facendo il merge tra tutti quelli presi in input,
-        * aggiungendo o aggiornando all'occorrenza il valore di un item letto */
-        for (MapWritable value : values) {
-            addAsterix(value);
+    	/* Scorre i valori ed aggiorna la somma dei valori relativi alla chiave k */
+        for (IntWritable value: values) {
+            count.set(count.get() + value.get());
         }
 
-        /* Scorre l'array associativo appena aggiornato ed emette in output la coppia (key,value) seguita da value */
-        for (Writable key : incrementingAsterixMap.keySet()) {
-
-            WordTriple t = new WordTriple(word, (WordPair)key);
-            context.write(t, (IntWritable) incrementingAsterixMap.get(key));
-        }
+        context.write(word, count);
+        count.set(0);
     }
 
     @Override
@@ -54,27 +46,5 @@ public class Reducer_1_A2 extends Reducer<Text, MapWritable, WordTriple, IntWrit
             InterruptedException {
         // TODO Auto-generated method stub
         super.setup(context);
-    }
-
-    private void addAsterix(MapWritable mapWritable) {
-
-        Set<Writable> keys = mapWritable.keySet();
-
-        for (Writable key : keys) {
-
-            IntWritable fromCount = (IntWritable) mapWritable.get(key);
-
-            if (incrementingAsterixMap.containsKey(key)) {
-
-                IntWritable count = (IntWritable) incrementingAsterixMap.get(key);
-                count.set(count.get() + fromCount.get());
-                //System.out.println("Key present: "+key.toString()+" Count value: "+count.toString());
-                incrementingAsterixMap.replace(key, count);
-
-            } else {
-                //System.out.println("Key not present: "+key.toString()+" Count value: "+fromCount.toString());
-                incrementingAsterixMap.put(key, fromCount);
-            }
-        }
     }
 }
